@@ -18,10 +18,16 @@ template <typename DataType, typename Allocator> class WrapperBase
         other.m_data = nullptr;
     }
 
-    WrapperBase operator=(WrapperBase &&other)
+    WrapperBase &operator=(WrapperBase &&other)
     {
         destroy();
-        swap(m_data, other.m_data);
+        std::swap(m_data, other.m_data);
+        return *this;
+    }
+
+    ~WrapperBase()
+    {
+        destroy();
     }
 
     operator bool() const
