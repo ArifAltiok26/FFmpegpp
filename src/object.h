@@ -18,9 +18,9 @@ class Object : public ObjectBase<DataType, Allocator>
   public:
     using ObjectBase<DataType, Allocator>::ObjectBase;
 
-    template <typename ExecutionTag, typename... Args> auto operator()(ExecutionTag &&tag, Args &&...args)
+    template <typename... Args> auto operator()(Args &&...args)
     {
-        return OperatorPolicies::execute(std::forward<ExecutionTag>(tag), *this, std::forward<Args>(args)...);
+        return OperatorPolicies::execute(*this, std::forward<Args>(args)...);
     }
 };
 
