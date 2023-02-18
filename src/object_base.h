@@ -2,30 +2,30 @@
 #include <utility>
 namespace ygv
 {
-template <typename DataType, typename Allocator> class WrapperBase
+template <typename DataType, typename Allocator> class ObjectBase
 {
   public:
-    template <typename... Args> WrapperBase(Args &&...args) : m_data(Allocator::allocate(std::forward<Args>(args)...))
+    template <typename... Args> ObjectBase(Args &&...args) : m_data(Allocator::allocate(std::forward<Args>(args)...))
     {
     }
 
-    WrapperBase(DataType *data) : m_data(data)
+    ObjectBase(DataType *data) : m_data(data)
     {
     }
 
-    WrapperBase(WrapperBase &&other) : m_data(other.m_data)
+    ObjectBase(ObjectBase &&other) : m_data(other.m_data)
     {
         other.m_data = nullptr;
     }
 
-    WrapperBase &operator=(WrapperBase &&other)
+    ObjectBase &operator=(ObjectBase &&other)
     {
         destroy();
         std::swap(m_data, other.m_data);
         return *this;
     }
 
-    ~WrapperBase()
+    ~ObjectBase()
     {
         destroy();
     }

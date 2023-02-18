@@ -1,6 +1,6 @@
 #pragma once
 #include "allocators/avpacket_allocator.h"
 #include "executors/avpacket_executor.h"
-#include "wrapper.h"
+#include "object.h"
 
-using Packet = ygv::Wrapper<AVPacket, AVPacketAllocator, AVPacketExecutor>;
+using Packet = ygv::Object<AVPacket, AVPacketAllocator, AVPacketExecutor>;

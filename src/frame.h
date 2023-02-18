@@ -1,5 +1,5 @@
 #pragma once
 #include "allocators/avframe_allocator.h"
-#include "wrapper.h"
+#include "object.h"
 
-using Frame = ygv::Wrapper<AVFrame, AVFrameAllocator, void>;
+using Frame = ygv::Object<AVFrame, AVFrameAllocator, void>;
