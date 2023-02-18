@@ -1,9 +1,12 @@
 #include "sws_context_allocator.h"
-#include "data_types/video_frame_params.h"
+#include "types/video_frame_params.h"
 extern "C"
 {
 #include <libswscale/swscale.h>
 }
+
+namespace ygv
+{
 
 SwsContext *SwsContextAllocator::allocate(int srcW, int srcH, int srcFormat, int dstW, int dstH, int dstFormat,
                                           int flags, SwsFilter *srcFilter, SwsFilter *dstFilter, const double *param)
@@ -23,3 +26,5 @@ void SwsContextAllocator::destroy(SwsContext *context)
 {
     sws_freeContext(context);
 }
+
+} // namespace ygv

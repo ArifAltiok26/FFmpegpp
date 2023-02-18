@@ -1,7 +1,5 @@
 #pragma once
-#include "codec_context.h"
-#include "format_context.h"
-#include "frame.h"
-#include "packet.h"
-#include "stream.h"
-#include "sws_scaler.h"
+#include "types/avframe_object.h"
+#include "types/avpacket_object.h"
+#include "types/input_format_context_object.h"
+#include "types/output_format_context_object.h"

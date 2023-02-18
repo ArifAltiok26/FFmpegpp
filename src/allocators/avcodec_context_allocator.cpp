@@ -3,10 +3,9 @@ extern "C"
 {
 #include <libavcodec/avcodec.h>
 }
-AVCodecContext *AVCodecContextAllocator::allocate()
+
+namespace ygv
 {
-    return allocate(nullptr);
-}
 
 AVCodecContext *AVCodecContextAllocator::allocate(const AVCodec *codec)
 {
@@ -17,3 +16,4 @@ void AVCodecContextAllocator::destroy(AVCodecContext *context)
 {
     avcodec_free_context(&context);
 }
+} // namespace ygv

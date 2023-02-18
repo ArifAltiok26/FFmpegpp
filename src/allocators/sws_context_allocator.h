@@ -1,8 +1,11 @@
 #pragma once
 struct SwsContext;
-struct VideoFrameParams;
 struct SwsFilter;
 
+namespace ygv
+{
+
+struct VideoFrameParams;
 struct SwsContextAllocator
 {
     static SwsContext *allocate(int srcW, int srcH, int srcFormat, int dstW, int dstH, int dstFormat, int flags,
@@ -15,3 +18,5 @@ struct SwsContextAllocator
 
     static void destroy(SwsContext *context);
 };
+
+} // namespace ygv

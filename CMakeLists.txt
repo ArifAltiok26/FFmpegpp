@@ -22,10 +22,9 @@ find_package(FFmpeg REQUIRED)
 include_directories(${FFmpeg_INCLUDE_DIRS})
 include_directories(src)
 
-file(GLOB SrcFiles
-    src/allocators/*.cpp
-    src/executors/*.cpp
-    src/data_types/.*cpp
+file(GLOB_RECURSE SrcFiles
+    src/*.cpp
+    
 )
 
 set(
