@@ -1,8 +1,9 @@
 #include "ffmpegpp.h"
-#include "operators/operators.h"
 extern "C"
 {
 #include <libavformat/avformat.h>
+    // if you don't need to access details of FFmpeg components you don't need to include them individually.
+    // FFmpegpp library already has enough information about FFmpeg components with Forward Declaration.
 }
 
 #include <atomic>
@@ -20,7 +21,12 @@ int main(int argc, char const *argv[])
             throw "Input couldn't open";
 
         self(input);
+        // It calls FFmpeg function which is avformat_find_stream_info(input);
+
         int video_index = self(input, MediaType::VIDEO);
+        // It calls FFmpeg function which is av_find_best_stream(input,AVMEDIA_TYPE_VIDEO,-1,-1,nullptr,0);
+        // Also, default parameters of this calls are -1,-1,nullptr,0.
+        // You can put another parameters which is FFmpeg functions want.
 
         int audio_index = input(SelfExecutionTag, MediaType::AUDIO);
         // instead of self operator you can do it like this way too
@@ -36,10 +42,11 @@ int main(int argc, char const *argv[])
         // Assume that object is any FFmpegpp Object.
         // Assume that params is a variadic parameters pack.
 
-        //        Left                                  Right
-        //    self(object,params...)      object(SelfExecutionTag,params...)
-        //    to(object,params...)        object(ToExecutionTag,params...)
-        //    from(object,params...)      object(FromExecutionTag,params...)
+        //    Left (Use via operators)      Right (Use directly via Object Classes)
+
+        //    self(object,params...)        object(SelfExecutionTag,params...)
+        //    to(object,params...)          object(ToExecutionTag,params...)
+        //    from(object,params...)        object(FromExecutionTag,params...)
 
         // As you can see from the examples, we actually have a static function in response to the ExectionTag and
         // parameter package implemented in an Object's policies class.
@@ -62,8 +69,20 @@ int main(int argc, char const *argv[])
         std::cout << video_index << std::endl;
         std::cout << audio_index << std::endl;
 
+        // Also, operators are useful for approximating colloquialism as mentioned earlier.
+        // If you want to interpret which operator you prefer, you can read the figure below.
+
+        // How to use operators             How to read operators meaning
+        // [Usage]                          [Object]    [operator]  [params...]
+
+        // to(object,params...)     ->      object      [to]        params...
+        // from(object,params...)   ->      object      [from]      params...
+        // self(object,params...)   ->      object      [self]      params...
+
         const char *filename = "test.avi";
         OutputFormatContextObject output(filename);
+
+        // As you can see that FFmpegpp Object Classes can be used with FFmpeg functions directly.
 
         AVStream *video = avformat_new_stream(output, nullptr);
         AVStream *audio = avformat_new_stream(output, nullptr);
@@ -86,7 +105,7 @@ int main(int argc, char const *argv[])
 
                 from(output, packet);
                 //  instead of to operator you can do like this
-                // output(ToExecutionTag, packet);
+                // output(FromExecutionTag, packet);
             }
         }
         av_write_trailer(output);
