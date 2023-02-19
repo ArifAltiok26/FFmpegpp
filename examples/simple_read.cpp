@@ -1,5 +1,4 @@
 #include "ffmpegpp.h"
-#include "operators/operators.h"
 extern "C"
 {
 

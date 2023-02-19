@@ -1,8 +1,9 @@
 #include "ffmpegpp.h"
-#include "operators/operators.h"
 extern "C"
 {
 #include <libavformat/avformat.h>
+    // if you don't need to access details of FFmpeg components you don't need to include them individually.
+    // FFmpegpp library already has enough information about FFmpeg components with Forward Declaration.
 }
 
 #include <atomic>
@@ -20,8 +21,12 @@ int main(int argc, char const *argv[])
             throw "Input couldn't open";
 
         self(input);
+        // It calls FFmpeg function which is avformat_find_stream_info(input);
 
         int video_index = self(input, MediaType::VIDEO);
+        // It calls FFmpeg function which is av_find_best_stream(input,AVMEDIA_TYPE_VIDEO,-1,-1,nullptr,0);
+        // Also, default parameters of this calls are -1,-1,nullptr,0.
+        // You can put another parameters which is FFmpeg functions want.
 
         int audio_index = input(SelfExecutionTag, MediaType::AUDIO);
         // instead of self operator you can do it like this way too
@@ -77,7 +82,7 @@ int main(int argc, char const *argv[])
         const char *filename = "test.avi";
         OutputFormatContextObject output(filename);
 
-        // As you can see that FFmpegg Object Classes can be used with ffmpeg functions directly.
+        // As you can see that FFmpegpp Object Classes can be used with FFmpeg functions directly.
 
         AVStream *video = avformat_new_stream(output, nullptr);
         AVStream *audio = avformat_new_stream(output, nullptr);
@@ -99,7 +104,7 @@ int main(int argc, char const *argv[])
                      output->streams[packet->stream_index]->time_base);
 
                 from(output, packet);
-                //  instead of to operator you can do like this
+                // instead of to operator you can do like this
                 // output(FromExecutionTag, packet);
             }
         }
