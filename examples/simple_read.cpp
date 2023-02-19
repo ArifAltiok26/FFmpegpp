@@ -56,8 +56,9 @@ int main(int argc, char const *argv[])
             // These operators are also useful for getting closer to colloquialism.
             // It can be read as follows:
 
-            // Please, Give me a packet from input. :)
-            if (!from(input, packet))
+            // Put any stream data from input [to] packet
+            //                           ctx---op---args
+            if (!to(input, packet))
             {
                 std::cout << packet->stream_index << std::endl;
             }

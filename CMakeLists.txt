@@ -34,6 +34,7 @@ set(
 
 if(BUILD_SHARED_LIBS)
     add_library(${PROJECT_NAME} SHARED ${SrcFiles})
+    set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
 else()
     add_library(${PROJECT_NAME} ${SrcFiles})
 endif()

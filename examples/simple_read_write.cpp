@@ -20,6 +20,7 @@ int main(int argc, char const *argv[])
             throw "Input couldn't open";
 
         self(input);
+
         int video_index = self(input, MediaType::VIDEO);
 
         int audio_index = input(SelfExecutionTag, MediaType::AUDIO);
@@ -36,10 +37,11 @@ int main(int argc, char const *argv[])
         // Assume that object is any FFmpegpp Object.
         // Assume that params is a variadic parameters pack.
 
-        //        Left                                  Right
-        //    self(object,params...)      object(SelfExecutionTag,params...)
-        //    to(object,params...)        object(ToExecutionTag,params...)
-        //    from(object,params...)      object(FromExecutionTag,params...)
+        //    Left (Use via operators)      Right (Use directly via Object Classes)
+
+        //    self(object,params...)        object(SelfExecutionTag,params...)
+        //    to(object,params...)          object(ToExecutionTag,params...)
+        //    from(object,params...)        object(FromExecutionTag,params...)
 
         // As you can see from the examples, we actually have a static function in response to the ExectionTag and
         // parameter package implemented in an Object's policies class.
@@ -62,8 +64,20 @@ int main(int argc, char const *argv[])
         std::cout << video_index << std::endl;
         std::cout << audio_index << std::endl;
 
+        // Also, operators are useful for approximating colloquialism as mentioned earlier.
+        // If you want to interpret which operator you prefer, you can read the figure below.
+
+        // How to use operators             How to read operators meaning
+        // [Usage]                          [Object]    [operator]  [params...]
+
+        // to(object,params...)     ->      object      [to]        params...
+        // from(object,params...)   ->      object      [from]      params...
+        // self(object,params...)   ->      object      [self]      params...
+
         const char *filename = "test.avi";
         OutputFormatContextObject output(filename);
+
+        // As you can see that FFmpegg Object Classes can be used with ffmpeg functions directly.
 
         AVStream *video = avformat_new_stream(output, nullptr);
         AVStream *audio = avformat_new_stream(output, nullptr);
@@ -86,7 +100,7 @@ int main(int argc, char const *argv[])
 
                 from(output, packet);
                 //  instead of to operator you can do like this
-                // output(ToExecutionTag, packet);
+                // output(FromExecutionTag, packet);
             }
         }
         av_write_trailer(output);
