@@ -6,7 +6,7 @@ extern "C"
 namespace ygv
 {
 
-int OutputFormatContextPolicies::execute(const FromExecution &, AVFormatContext *context, AVPacket *packet)
+int OutputFormatContextPolicies::execute(AVFormatContext *context, const Write &, AVPacket *packet)
 {
     return av_interleaved_write_frame(context, packet);
 }

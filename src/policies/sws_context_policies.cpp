@@ -7,7 +7,7 @@ extern "C"
 namespace ygv
 {
 
-int SwsContextPolicies::execute(const FromExecution &, SwsContext *context, AVFrame *src, AVFrame *dest)
+int SwsContextPolicies::execute(SwsContext *context, const Rescale &, AVFrame *src, AVFrame *dest)
 {
     return sws_scale(context, src->data, src->linesize, 0, src->height, dest->data, dest->linesize);
 }

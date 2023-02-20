@@ -1,11 +1,11 @@
 #pragma once
 struct AVFormatContext;
 struct AVPacket;
-#include "tags/from_execution.h"
+#include "tags/write.h"
 namespace ygv
 {
 struct OutputFormatContextPolicies
 {
-    static int execute(const FromExecution &, AVFormatContext *context, AVPacket *packet);
+    static int execute(AVFormatContext *context, const Write &, AVPacket *packet);
 };
 } // namespace ygv

@@ -11,11 +11,11 @@ struct DecoderContextPolicies : AVCodecContextPolicies
 {
     using AVCodecContextPolicies::execute;
 
-    static int execute(const FromExecution &, AVCodecContext *context, AVPacket *packet);
+    static int execute(AVCodecContext *context, const Write &, AVPacket *packet);
 
-    static int execute(const ToExecution &, AVCodecContext *context, AVFrame *frame);
+    static int execute(AVCodecContext *context, const Read &, AVFrame *frame);
 
-    static int execute(const SelfExecution &, AVCodecContext *context, const AVCodecParameters *params,
+    static int execute(AVCodecContext *context, const Open &, const AVCodecParameters *params,
                        AVDictionary **options = nullptr);
 };
 

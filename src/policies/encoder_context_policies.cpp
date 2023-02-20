@@ -7,21 +7,21 @@ extern "C"
 namespace ygv
 {
 
-int EncoderContextPolicies::execute(const ToExecution &, AVCodecContext *context, AVPacket *packet)
+int EncoderContextPolicies::execute(AVCodecContext *context, const Read &, AVPacket *packet)
 {
     return avcodec_receive_packet(context, packet);
 }
 
-int EncoderContextPolicies::execute(const FromExecution &, AVCodecContext *context, AVFrame *frame)
+int EncoderContextPolicies::execute(AVCodecContext *context, const Write &, AVFrame *frame)
 {
     return avcodec_send_frame(context, frame);
 }
 
-int EncoderContextPolicies::execute(const SelfExecution &, AVCodecContext *context, const AVCodecParameters *params,
+int EncoderContextPolicies::execute(AVCodecContext *context, const Open &, const AVCodecParameters *params,
                                     AVDictionary **options)
 {
     const AVCodec *codec = avcodec_find_encoder(params->codec_id);
-    execute(FromExecutionTag, context, params);
-    return avcodec_open2(context, codec, options);
+    execute(context, write, params);
+    return execute(context, open, codec, options);
 }
 } // namespace ygv

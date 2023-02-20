@@ -8,7 +8,7 @@ extern "C"
 namespace ygv
 {
 
-void AVPacketPolicies::execute(const SelfExecution &, AVPacket *packet, const AVRational &src, const AVRational &dest)
+void AVPacketPolicies::execute(AVPacket *packet, const Rescale &, const AVRational &src, const AVRational &dest)
 {
     av_packet_rescale_ts(packet, src, dest);
 }

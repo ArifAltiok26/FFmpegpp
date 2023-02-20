@@ -6,12 +6,12 @@ extern "C"
 namespace ygv
 {
 
-int InputFormatContextPolicies::execute(const ToExecution &, AVFormatContext *context, AVPacket *packet)
+int InputFormatContextPolicies::execute(AVFormatContext *context, const Read &, AVPacket *packet)
 {
     return av_read_frame(context, packet);
 }
 
-int InputFormatContextPolicies::execute(const SelfExecution &, AVFormatContext *context, MediaType type)
+int InputFormatContextPolicies::execute(AVFormatContext *context, const Find &, MediaType type)
 {
     AVMediaType ff_type;
     switch (type)
@@ -28,7 +28,7 @@ int InputFormatContextPolicies::execute(const SelfExecution &, AVFormatContext *
     return av_find_best_stream(context, ff_type, -1, -1, nullptr, 0);
 }
 
-int InputFormatContextPolicies::execute(const SelfExecution &, AVFormatContext *context, AVDictionary **options)
+int InputFormatContextPolicies::execute(AVFormatContext *context, const Find &, AVDictionary **options)
 {
     return avformat_find_stream_info(context, options);
 }

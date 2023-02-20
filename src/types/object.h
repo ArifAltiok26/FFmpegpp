@@ -3,7 +3,7 @@
 namespace ygv
 {
 
-template <typename DataType, typename Allocator, typename OperatorPolicies> class Object;
+template <typename DataType, typename Allocator, typename OperatorPolicy> class Object;
 
 template <typename DataType, typename Allocator>
 class Object<DataType, Allocator, void> : public ObjectBase<DataType, Allocator>
@@ -12,15 +12,15 @@ class Object<DataType, Allocator, void> : public ObjectBase<DataType, Allocator>
     using ObjectBase<DataType, Allocator>::ObjectBase;
 };
 
-template <typename DataType, typename Allocator, typename OperatorPolicies>
+template <typename DataType, typename Allocator, typename OperatorPolicy>
 class Object : public ObjectBase<DataType, Allocator>
 {
   public:
     using ObjectBase<DataType, Allocator>::ObjectBase;
 
-    template <typename ExecutionTag, typename... Args> auto operator()(ExecutionTag &&tag, Args &&...args)
+    template <typename... Args> auto operator()(Args &&...args)
     {
-        return OperatorPolicies::execute(std::forward<ExecutionTag>(tag), *this, std::forward<Args>(args)...);
+        return OperatorPolicy::execute(*this, std::forward<Args>(args)...);
     }
 };
 

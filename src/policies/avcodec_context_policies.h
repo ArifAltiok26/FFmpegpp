@@ -3,17 +3,19 @@ struct AVCodecContext;
 struct AVCodecParameters;
 struct AVCodec;
 struct AVDictionary;
-#include "tags/tags.h"
+#include "tags/open.h"
+#include "tags/read.h"
+#include "tags/write.h"
 namespace ygv
 {
 
 struct AVCodecContextPolicies
 {
-    static int execute(const FromExecution &, AVCodecContext *context, const AVCodecParameters *params);
+    static int execute(AVCodecContext *context, const Write &, const AVCodecParameters *params);
 
-    static int execute(const ToExecution &, AVCodecContext *context, AVCodecParameters *params);
+    static int execute(AVCodecContext *context, const Read &, AVCodecParameters *params);
 
-    static int execute(const SelfExecution &, AVCodecContext *context, const AVCodec *codec = nullptr,
+    static int execute(AVCodecContext *context, const Open &, const AVCodec *codec = nullptr,
                        AVDictionary **options = nullptr);
 };
 

@@ -2,10 +2,14 @@
 #include <utility>
 namespace ygv
 {
-template <typename DataType, typename Allocator> class ObjectBase
+template <typename DataType, typename Allocator> class ObjectBase : Allocator
 {
+  private:
+    using Allocator::allocate;
+    using Allocator::destroy;
+
   public:
-    template <typename... Args> ObjectBase(Args &&...args) : m_data(Allocator::allocate(std::forward<Args>(args)...))
+    template <typename... Args> ObjectBase(Args &&...args) : m_data(allocate(std::forward<Args>(args)...))
     {
     }
 
@@ -35,7 +39,7 @@ template <typename DataType, typename Allocator> class ObjectBase
         return m_data;
     }
 
-    operator DataType *()
+    operator DataType *&()
     {
         return m_data;
     }
@@ -70,7 +74,7 @@ template <typename DataType, typename Allocator> class ObjectBase
     {
         if (m_data)
         {
-            Allocator::destroy(m_data);
+            destroy(m_data);
         }
     }
 

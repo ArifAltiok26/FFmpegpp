@@ -1,6 +1,6 @@
 #pragma once
-#include "tags/self_execution.h"
-#include "tags/to_execution.h"
+#include "tags/find.h"
+#include "tags/read.h"
 struct AVFormatContext;
 struct AVPacket;
 struct AVDictionary;
@@ -16,11 +16,11 @@ namespace ygv
 
 struct InputFormatContextPolicies
 {
-    static int execute(const ToExecution &, AVFormatContext *context, AVPacket *packet);
+    static int execute(AVFormatContext *context, const Read &, AVPacket *packet);
 
-    static int execute(const SelfExecution &, AVFormatContext *context, MediaType type);
+    static int execute(AVFormatContext *context, const Find &, MediaType type);
 
-    static int execute(const SelfExecution &, AVFormatContext *context, AVDictionary **options = nullptr);
+    static int execute(AVFormatContext *context, const Find &, AVDictionary **options = nullptr);
 };
 
 } // namespace ygv
