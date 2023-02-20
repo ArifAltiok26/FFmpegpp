@@ -44,23 +44,29 @@ int main(int argc, char const *argv[])
 
         while (!isStop)
         {
-            // The From operator is an operator that redirects to Object classes.
-            // This redirection is determined by the compiler at compile time and invokes the correct execution method
-            // of the policies class used by the object class, based on the parameter types.
-
+            // Object with policy can be used like a function.
+            // The function call can also be made on the variadic parameters.
+            // If the Object has a matching function according to its own policies, it will redirect it.
+            // If not, you will get an error at compile time.
             // To be honest, The FFmpegpp library tries to implement function overloading well.
-            // Also, There are two more operators, their names are To and Self, such as the From operator.
-            // Your will see them in other examples.
+            // Thus, the compiler understands them at compile time and does not incur additional overhead at runtime.
 
-            // These operators are also useful for getting closer to colloquialism.
-            // It can be read as follows:
+            // Also, using an object as a function brings it closer to colloquialism.
+            // Let's look at the example below.
 
-            // Put any stream data from input [to] packet
-            //                           ctx---op---args
-            if (!to(input, packet))
+            if (!input(read, packet))
             {
                 std::cout << packet->stream_index << std::endl;
             }
+
+            // We have tags so that object functions can be implemented with the same parameter package but for
+            // different purposes.
+            // Also, You can create your own tags. We will see this later.
+
+            // Going back to the example above, it doesn't seem too hard to think of it the way we want to read a packet
+            // from the input, does it?
+
+            // Feel at home and keep going.
         }
     });
 

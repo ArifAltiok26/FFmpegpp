@@ -11,78 +11,64 @@ extern "C"
 #include <thread>
 int main(int argc, char const *argv[])
 {
+    // First of all, If you're wondering what we're doing here, first read the explanations in the simple_read.cpp file.
     using namespace ygv;
 
-    std::atomic_bool isStop(false);
+    // Also, you don't need to use any threads, but I want to terminate the program automatically after 10 seconds.
 
+    std::atomic_bool isStop(false);
     std::thread worker([&isStop] {
         InputFormatContextObject input("rtsp://admin:admin@192.168.1.14");
         if (!input)
             throw "Input couldn't open";
 
-        self(input);
+        // We have another tag that is named find.
         // It calls FFmpeg function which is avformat_find_stream_info(input);
+        input(find);
 
-        int video_index = self(input, MediaType::VIDEO);
+        int video_index = input(find, MediaType::VIDEO);
         // It calls FFmpeg function which is av_find_best_stream(input,AVMEDIA_TYPE_VIDEO,-1,-1,nullptr,0);
         // Also, default parameters of this calls are -1,-1,nullptr,0.
-        // You can put another parameters which is FFmpeg functions want.
+        // You can put another parameters which is FFmpeg function wants.
 
-        int audio_index = input(SelfExecutionTag, MediaType::AUDIO);
-        // instead of self operator you can do it like this way too
+        int audio_index = input(find, MediaType::AUDIO);
 
-        // Lets have look at examples about Self,To and From operators usage.
+        // Let's have a look at our tags with the examples and try to understand the main idea behind them.
 
-        // The expressions on the left and on the right are the same.
-        // Moreover, the compiler optimizes well regardless of the type of these calls.
-        // It means You don't have to worry about which one to choose.
+        // For now, In alphabetical order tags are below;
+        // create, find, from, open, read, rescale, to, write
+
+        // Tags are useful when FFmpegpp objects have the same parameter package but need to call different functions.
+        // Its main purpose is to bring them closer to colloquialism of the work to be done.
+        // Also, you can create a new one if you want.
+
+        // Moreover, the compiler optimizes these calls well at compile time and doesn't incur additional runtime costs.
 
         // Feel at home again :)
 
         // Assume that object is any FFmpegpp Object.
         // Assume that params is a variadic parameters pack.
 
-        //    Left (Use via operators)      Right (Use directly via Object Classes)
+        // object(create,params...);    -> when we create something on the object
+        // object(find,params...);      -> when we search something on object
+        // object(from,params...);      -> when we redirect information from params to object
+        // object(open,params...);      -> if the object is a context we will open it with parameters
+        // object(read,params...);      -> when perform read function and load into parameters if possible.
+        // object(rescale,params...);   -> if the object is a scalable object.
+        // object(to,params...);        -> when we redirect information from object to params
+        // object(write,params...);     -> when perform write function and load into parameters if possible.
 
-        //    self(object,params...)        object(SelfExecutionTag,params...)
-        //    to(object,params...)          object(ToExecutionTag,params...)
-        //    from(object,params...)        object(FromExecutionTag,params...)
-
-        // As you can see from the examples, we actually have a static function in response to the ExectionTag and
+        // As you can see from the explanations, we actually have a static function in response to the tags and
         // parameter package implemented in an Object's policies class.
 
-        // The main idea behind this is that we can implement three different types of routing with the same parameter
-        // package.
-
-        // We have a rule that you don't have to follow when you add a new functionality. However, in order not to
-        // conflict with motivation, it is important to understand what the Self, To and From tags do.
-
-        // As you guessed;
-
-        // The Self tag means that the object takes something from the parameters and will use it within itself.
-
-        // The To tag means that the object will place something in the parameters.
-
-        // The From tag means that it will take something from the parameters and it will load the results onto the
-        // parameters.
+        // We will see later how to create a new tag and a new policy.
 
         std::cout << video_index << std::endl;
         std::cout << audio_index << std::endl;
 
-        // Also, operators are useful for approximating colloquialism as mentioned earlier.
-        // If you want to interpret which operator you prefer, you can read the figure below.
-
-        // How to use operators             How to read operators meaning
-        // [Usage]                          [Object]    [operator]  [params...]
-
-        // to(object,params...)     ->      object      [to]        params...
-        // from(object,params...)   ->      object      [from]      params...
-        // self(object,params...)   ->      object      [self]      params...
-
         const char *filename = "test.avi";
-        OutputFormatContextObject output(filename);
 
-        // As you can see that FFmpegpp Object Classes can be used with FFmpeg functions directly.
+        OutputFormatContextObject output(filename);
 
         AVStream *video = avformat_new_stream(output, nullptr);
         AVStream *audio = avformat_new_stream(output, nullptr);
@@ -94,18 +80,28 @@ int main(int argc, char const *argv[])
 
         std::cout << avformat_write_header(output, nullptr) << std::endl;
 
+        // As you can see that FFmpegpp Object Classes can be used with FFmpeg functions directly.
+        // Why and How ?
+        // Why -> We don't know what everyone is using FFmpeg for.
+        // For this, FFmpegpp Objects are designed to work directly with ffmpeg functions.
+        // But if you are using this library to avoid polluting your code and not dealing with FFmpeg
+        // directly, have a look at what has been done for it instead of using them.
+
+        // How -> Almost all of compilers is smart.
+        // Also, FFmpegpp Object class has a operator DataType*(). It means it a casting operator :).
+        // The compiler converts the object to be used in the call at compile time, if it is possible to cast it.
+        // It does this thanks to the casting operator.
+
         AVPacketObject packet;
 
         while (!isStop)
         {
-            if (!to(input, packet))
+            if (!input(read, packet))
             {
-                self(packet, input->streams[packet->stream_index]->time_base,
-                     output->streams[packet->stream_index]->time_base);
+                packet(rescale, input->streams[packet->stream_index]->time_base,
+                       output->streams[packet->stream_index]->time_base);
 
-                from(output, packet);
-                // instead of to operator you can do like this
-                // output(FromExecutionTag, packet);
+                output(write, packet);
             }
         }
         av_write_trailer(output);
