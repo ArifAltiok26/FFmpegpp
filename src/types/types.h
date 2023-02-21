@@ -7,4 +7,5 @@
 #include "encoder_context_object.h"
 #include "input_format_context_object.h"
 #include "output_format_context_object.h"
+#include "swr_context_object.h"
 #include "sws_context_object.h"
