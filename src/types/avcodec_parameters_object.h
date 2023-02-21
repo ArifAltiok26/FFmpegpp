@@ -1,11 +1,14 @@
 #pragma once
-#include "allocators/avcodec_parameters_allocator.h"
+#include "allocators/avcodec_parameters.h"
 #include "object.h"
-#include "policies/avcodec_parameters_policies.h"
+#include "policies/avcodec_parameters.h"
 
 struct AVCodecParameters;
 
 namespace ygv
 {
-using AVCodecParametersObject = Object<AVCodecParameters, AVCodecParametersAllocator, AVCodecParametersPolicies>;
+
+using AVCodecParametersObject =
+    Object<AVCodecParameters, allocators::AVCodecParameters_w, policies::AVCodecParameters_w>;
+
 }
