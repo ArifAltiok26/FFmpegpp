@@ -6,6 +6,11 @@ extern "C"
 namespace ygv
 {
 
+AVAudioFifo *AVAudioFifoAllocator::allocate()
+{
+    return nullptr;
+}
+
 AVAudioFifo *AVAudioFifoAllocator::allocate(int sample_fmt, int channels, int nb_samples)
 {
     return av_audio_fifo_alloc((AVSampleFormat)sample_fmt, channels, nb_samples < 1 ? 1 : nb_samples);

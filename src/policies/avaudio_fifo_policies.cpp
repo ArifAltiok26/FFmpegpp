@@ -7,6 +7,12 @@ extern "C"
 namespace ygv
 {
 
+int AVAudioFifoPolicies::execute(AVAudioFifo *&af, const Open &, int sample_fmt, int channels, int nb_samples)
+{
+    af = av_audio_fifo_alloc(AVSampleFormat(sample_fmt), channels, nb_samples < 1 ? 1 : nb_samples);
+    return !af;
+}
+
 int AVAudioFifoPolicies::execute(AVAudioFifo *af, const Write &, AVFrame *src)
 {
     return av_audio_fifo_write(af, (void **)src->data, src->nb_samples);
