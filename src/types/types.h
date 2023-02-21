@@ -1,4 +1,5 @@
 #pragma once
+#include "avaudio_fifo_object.h"
 #include "avcodec_parameters_object.h"
 #include "avframe_object.h"
 #include "avpacket_object.h"
