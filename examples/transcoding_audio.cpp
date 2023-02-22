@@ -26,11 +26,11 @@ int main(int argc, char const *argv[])
 
     std::cout << "ifvi" << videoIndex << std::endl;
     std::cout << "ifai" << audioIndex << std::endl;
-    // There is no a magic here.
+    // There is no magic here.
     // I created a pattern myself. I want to see what parameters I am using on which object and what it returns me.
     // I achieved this by directing the initials of each word to the printout in the camel case spelling.
     // Accually, you dont need to do this.
-    // I just want to see result in std::cout.
+    // I just want to redirect results to std::cout.
 
     const AVStream *inVideoStream = input->streams[videoIndex];
     const AVStream *inAudioStream = input->streams[audioIndex];
@@ -51,7 +51,7 @@ int main(int argc, char const *argv[])
         // Avoid scope leak.
         // Thus FFmpegpp objecs will be destroyed immediately when their lifecycle ends.
 
-        // We just copied input video params to out video params.
+        // We just copied input video stream params to output video stream params.
 
         AVCodecParametersObject inVideoParams;
         std::cout << "ivpfivs" << inVideoParams(from, inVideoStream) << std::endl;
@@ -59,7 +59,7 @@ int main(int argc, char const *argv[])
 
         // If you wonder that how we copied params to another one.
         // Please keep going and look at below scopes.
-        // You will be able to find more explanations below.
+        // You will find more explanations below.
     }
 
     AVStream *outAudioStream = output(create);
@@ -85,7 +85,7 @@ int main(int argc, char const *argv[])
 
         // Of course, we will use our object classes.
 
-        // AVCodecParametersObject can take data from some structures.
+        // AVCodecParametersObject can take the data from some structures.
         // These structures are AVCodecParameters, AVCodecContext and AVStream.
         // And at the same thing it can load its data to them.
 
@@ -108,8 +108,8 @@ int main(int argc, char const *argv[])
 
         std::cout << "oapfias" << outAudioParams(from, inAudioStream) << std::endl;
 
-        // We change destination audio codec,format and framesize.
-        // As you guess, now, we preparing transcoding options :)
+        // We change destination audio codec,format and frame_size.
+        // As you guessed, now, we are preparing transcoding options :)
 
         outAudioParams->channel_layout = av_get_default_channel_layout(outAudioParams->channels);
 
@@ -117,16 +117,16 @@ int main(int argc, char const *argv[])
         outAudioParams->format = AV_SAMPLE_FMT_FLTP;
         outAudioParams->frame_size = 1024;
 
-        // Decoder will be open with input audio params...
+        // The decoder will be opened with input audio params...
         std::cout << "doiap" << decoder(open, inAudioParams) << std::endl;
 
-        // Encoder will be open with input audio params...
+        // The encoder will be opened with output audio params...
         std::cout << "eooap" << encoder(open, outAudioParams) << std::endl;
 
         // If you want to record encoded packet to output.
-        // Then You must copy out audio params to out audio stream.
-        // Otherwise, you output file won't recognize this stream and
-        // if you output them you won't see the result or you will get an error during muxing.
+        // Then you must copy the output audio params to the output audio stream.
+        // Otherwise, your output file won't recognize this stream and
+        // if you put to output them you won't see the result or you will get an error during the muxing.
 
         std::cout << "oaptoas" << outAudioParams(to, outAudioStream) << std::endl;
 
@@ -141,31 +141,35 @@ int main(int argc, char const *argv[])
                                inAudioParams->sample_rate)
                   << std::endl;
 
-        // Normally, opening some contexts in FFmpeg requires processes step by step.
+        // Normally, opening some contexts in FFmpeg requires operations that are step-by-step.
         // As you can see here, we have provided the direct opening functionality.
 
-        // Here, We need to have two buffers. One is required for resampling and the other for encoding.
+        // Another issuu for resampling;
+        // We need to have two buffers. One is required for resampling and the other for encoding.
         // Then Let's create them.
         for (int i = 0; i < 2; i++)
         {
             // Also, You don't have to use an array. You can use two seperate variable.
-            // But i preferred use an array.
+            // But i preferred to use an array.
             resampler_buff[i]->format = outAudioParams->format;
             resampler_buff[i]->channel_layout = outAudioParams->channel_layout;
             resampler_buff[i]->nb_samples = outAudioParams->frame_size;
             std::cout << "av_frame_get_buffer" << av_frame_get_buffer(resampler_buff[i], 0) << std::endl;
         }
 
-        // Of course, the input and output audio frames are not the same sizes, we should first put to fifo.
+        // Of course, the input and output audio frames are not the same sizes.
+        // We should first put them to fifo.
         // Also, fifo stands for first in first out.
-        // As you guessed, the inputs come in chunks.
-        // So it can be larger or smaller than the output size.
+        // As you guessed, the input frames come in chunks.
+        // So it can be larger or smaller than the output frame size.
         // First, we will take it and put into fifo.
-        // Then we get the samples as much as output size when fifo size is bigger than output size.
-        // Then we resample them.
+        // Then we get the samples as much as output frame size when fifo size is bigger than output frame size.
+        // The, we can resample it.
         // Accually, This is not releated to FFmpegpp, it is just an audio transcoding algorithm.
         // Our purpose is to present algorithm components easily.
-        // Algorithm is in the while loop. You can look at that.
+        // The implementation of the algorithm is in the while loop. You can look at that.
+
+        // Last of all, dont forget to open the fifo :).
 
         fifo(open, inAudioParams->format, inAudioParams->channels);
     }
@@ -188,30 +192,44 @@ int main(int argc, char const *argv[])
         while (isRunning)
         {
 
+            // read packet from input.
             int retval = input(read, packet);
             if (retval >= 0)
             {
-
+                // The packet is checked that is a video packet.
                 if (packet->stream_index == inVideoStream->index)
                 {
+                    // We don't want to transcode it. Let's send it to the output as is.
                     packet->stream_index = outVideoStream->index;
                     packet(rescale, inVideoStream->time_base, outVideoStream->time_base);
                     retval = output(write, packet);
                 }
+                // The packet is checked that is a audio packet.
                 else if (packet->stream_index == inAudioStream->index)
                 {
+                    // First, Let's decode packet in order to get a frame.
                     decoder(write, packet);
+                    // Let's get a frame.
                     decoder(read, frame);
 
+                    // Then, We should write the frame to the fifo.
+                    // Dont process directly on it.
                     fifo(write, frame);
+
+                    // Check fifo size
+                    // fifo(read) call return fifo size.
 
                     if (fifo(read) >= resampler_buff[0]->nb_samples)
                     {
+                        // We must here if the fifo size is enough as output frame size.
+                        // Now we can read as much data as the output frame size.
                         fifo(read, resampler_buff[0]);
 
+                        // Let's transcode buff[0] to buff[1] as resampled audio.
                         resampler(rescale, resampler_buff[0], resampler_buff[1]);
                         if (encoder(write, resampler_buff[1]) >= 0)
                         {
+                            // As final step, Let's encode the resampled audio, then write to the output as audio.
                             AVPacketObject encoded;
                             if (encoder(read, encoded) >= 0)
                             {
