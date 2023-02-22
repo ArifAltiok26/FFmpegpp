@@ -3,7 +3,7 @@ namespace ygv::allocators
 {
 template <typename DataType> struct Default_w
 {
-    DataType *allocate()
+    static DataType *allocate()
     {
         return new DataType();
     }
@@ -13,7 +13,7 @@ template <typename DataType> struct Default_w
         return new DataType(args...);
     }
 
-    void destroy(DataType *data)
+    static void destroy(DataType *data)
     {
         delete data;
     }
