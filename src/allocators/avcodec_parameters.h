@@ -6,9 +6,9 @@ namespace ygv::allocators
 
 struct AVCodecParameters_w
 {
-    AVCodecParameters *allocate();
+    static AVCodecParameters *allocate();
 
-    void destroy(AVCodecParameters *params);
+    static void destroy(AVCodecParameters *params);
 };
 
 } // namespace ygv::allocators
