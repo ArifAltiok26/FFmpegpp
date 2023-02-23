@@ -55,7 +55,7 @@ int main(int argc, char const *argv[])
 
         AVCodecParametersObject inVideoParams;
         std::cout << "ivpfivs" << inVideoParams(from, inVideoStream) << std::endl;
-        std::cout << "inptovs" << inVideoParams(to, outVideoStream) << std::endl;
+        std::cout << "ivptovs" << inVideoParams(to, outVideoStream) << std::endl;
 
         // If you wonder that how we copied params to another one.
         // Please keep going and look at below scopes.
@@ -135,11 +135,7 @@ int main(int argc, char const *argv[])
         // Fortunately, we wrapped it in SwrContextObject.
         // Let's open the resampling context.
 
-        std::cout << "rooap...iap..."
-                  << resampler(open, outAudioParams->channel_layout, outAudioParams->format,
-                               outAudioParams->sample_rate, inAudioParams->channel_layout, inAudioParams->format,
-                               inAudioParams->sample_rate)
-                  << std::endl;
+        std::cout << "rooap...iap..." << resampler(open, inAudioParams, outAudioParams) << std::endl;
 
         // Normally, opening some contexts in FFmpeg requires operations that are step-by-step.
         // As you can see here, we have provided the direct opening functionality.
