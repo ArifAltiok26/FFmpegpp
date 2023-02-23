@@ -11,7 +11,14 @@ int InputFormatContext_w::execute(AVFormatContext *context, const Read &, AVPack
     return av_read_frame(context, packet);
 }
 
-int InputFormatContext_w::execute(AVFormatContext *context, const Find &, MediaType type)
+int InputFormatContext_w::execute(AVFormatContext *context, const Find &find, MediaType type, const AVCodec **decoder)
+{
+
+    return execute(context, find, type, -1, -1, decoder, 0);
+}
+
+int InputFormatContext_w::execute(AVFormatContext *context, const Find &, MediaType type, int wanted_stream_nb,
+                                  int related_stream, const AVCodec **decoder, int flags)
 {
     AVMediaType ff_type;
     switch (type)
@@ -25,7 +32,7 @@ int InputFormatContext_w::execute(AVFormatContext *context, const Find &, MediaT
     default:
         return -1;
     }
-    return av_find_best_stream(context, ff_type, -1, -1, nullptr, 0);
+    return av_find_best_stream(context, ff_type, wanted_stream_nb, related_stream, decoder, flags);
 }
 
 int InputFormatContext_w::execute(AVFormatContext *context, const Find &, AVDictionary **options)
