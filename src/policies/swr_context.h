@@ -1,6 +1,8 @@
 #pragma once
 struct SwrContext;
 struct AVFrame;
+struct AVCodecParameters;
+
 #include "tags/open.h"
 #include "tags/rescale.h"
 #include <stdint.h>
@@ -12,6 +14,9 @@ struct SwrContext_w
 {
     static int execute(SwrContext *&context, const Open &, int64_t out_ch_layout, int out_sample_fmt,
                        int out_sample_rate, int64_t in_ch_layout, int in_sample_fmt, int in_sample_rate,
+                       int log_offset = 0, void *log_ctx = nullptr);
+
+    static int execute(SwrContext *&context, const Open &, const AVCodecParameters *src, const AVCodecParameters *dest,
                        int log_offset = 0, void *log_ctx = nullptr);
 
     static int execute(SwrContext *context, const Rescale &, const AVFrame *src, AVFrame *dest);

@@ -2,6 +2,7 @@
 
 extern "C"
 {
+#include <libavcodec/codec_par.h>
 #include <libavutil/avutil.h>
 #include <libswresample/swresample.h>
 }
@@ -15,6 +16,13 @@ int SwrContext_w::execute(SwrContext *&context, const Open &, int64_t out_ch_lay
     context = swr_alloc_set_opts(context, out_ch_layout, (AVSampleFormat)out_sample_fmt, out_sample_rate, in_ch_layout,
                                  (AVSampleFormat)in_sample_fmt, in_sample_rate, log_offset, log_ctx);
     return swr_init(context);
+}
+
+int SwrContext_w::execute(SwrContext *&context, const Open &open, const AVCodecParameters *src,
+                          const AVCodecParameters *dest, int log_offset, void *log_ctx)
+{
+    return execute(context, open, dest->channel_layout, dest->format, dest->sample_rate, src->channel_layout,
+                   src->format, src->sample_rate, log_offset, log_ctx);
 }
 
 int SwrContext_w::execute(SwrContext *context, const Rescale &tag, const AVFrame *src, AVFrame *dest)
