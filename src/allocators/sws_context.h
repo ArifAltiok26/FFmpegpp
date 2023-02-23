@@ -12,6 +12,8 @@ namespace allocators
 
 struct SwsContext_w
 {
+    static SwsContext *allocate();
+
     static SwsContext *allocate(int srcW, int srcH, int srcFormat, int dstW, int dstH, int dstFormat, int flags,
                                 SwsFilter *srcFilter = nullptr, SwsFilter *dstFilter = nullptr,
                                 const double *param = nullptr);

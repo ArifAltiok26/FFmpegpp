@@ -8,6 +8,12 @@ extern "C"
 namespace ygv::allocators
 {
 
+SwsContext *SwsContext_w::allocate()
+{
+
+    return sws_alloc_context();
+}
+
 SwsContext *SwsContext_w::allocate(int srcW, int srcH, int srcFormat, int dstW, int dstH, int dstFormat, int flags,
                                    SwsFilter *srcFilter, SwsFilter *dstFilter, const double *param)
 {
