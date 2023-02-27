@@ -75,6 +75,7 @@ template <typename DataType, typename Allocator> class ObjectBase : Allocator
         if (m_data)
         {
             destroy(m_data);
+            m_data = nullptr;
         }
     }
 

@@ -1,14 +1,14 @@
 #pragma once
 namespace ygv::allocators
 {
-template <typename DataType> struct Default_w
+template <typename DataType> struct Default
 {
     static DataType *allocate()
     {
         return new DataType();
     }
 
-    template <typename... Args> DataType *allocate(Args &&...args)
+    template <typename... Args> static DataType *allocate(Args &&...args)
     {
         return new DataType(args...);
     }
