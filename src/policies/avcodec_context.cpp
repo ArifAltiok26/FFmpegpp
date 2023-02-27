@@ -6,12 +6,12 @@ extern "C"
 namespace ygv::policies
 {
 
-int AVCodecContext_w::execute(AVCodecContext *context, const Write &, const AVCodecParameters *params)
+int AVCodecContext_w::execute(AVCodecContext *context, const From &, const AVCodecParameters *params)
 {
     return avcodec_parameters_to_context(context, params);
 }
 
-int AVCodecContext_w::execute(AVCodecContext *context, const Read &, AVCodecParameters *params)
+int AVCodecContext_w::execute(AVCodecContext *context, const To &, AVCodecParameters *params)
 {
     return avcodec_parameters_from_context(params, context);
 }

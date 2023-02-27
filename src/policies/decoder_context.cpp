@@ -21,7 +21,7 @@ int DecoderContext_w::execute(AVCodecContext *context, const Open &, const AVCod
                               AVDictionary **options)
 {
     const AVCodec *codec = avcodec_find_decoder(params->codec_id);
-    execute(context, write, params);
+    execute(context, from, params);
     return execute(context, open, codec, options);
 }
 

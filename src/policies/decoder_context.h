@@ -1,6 +1,7 @@
 #pragma once
 #include "avcodec_context.h"
-
+#include "tags/read.h"
+#include "tags/write.h"
 struct AVPacket;
 struct AVFrame;
 
