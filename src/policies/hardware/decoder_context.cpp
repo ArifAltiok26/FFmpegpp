@@ -39,9 +39,13 @@ int DecoderContext_w::execute(DecoderContext *context, const Write &write, AVPac
 
 int DecoderContext_w::execute(DecoderContext *context, const Read &read, AVFrame *dest)
 {
-    AVFrameObject src;
-    context->decoder(read, src);
-    return av_hwframe_transfer_data(dest, src, 0);
+    if (context->decoder->hw_device_ctx)
+    {
+        AVFrameObject src;
+        context->decoder(read, src);
+        return av_hwframe_transfer_data(dest, src, 0);
+    }
+    return context->decoder(read, dest);
 }
 
 int DecoderContext_w::execute(DecoderContext *context, const Create, DeviceType type, const char *device,
@@ -86,6 +90,11 @@ int DecoderContext_w::execute(DecoderContext *context, const Create, DeviceType 
         break;
     case DeviceType::VULKAN:
         break;
+    case DeviceType::NONE:
+        if (context->hw_context)
+            av_buffer_unref(&context->hw_context);
+        context->decoder->hw_device_ctx = nullptr;
+        return 0;
     }
 
     if (!get_format_callback)
@@ -97,8 +106,12 @@ int DecoderContext_w::execute(DecoderContext *context, const Create, DeviceType 
     }
 
     int retval = av_hwdevice_ctx_create(&context->hw_context, ffmpeg_hw_type, device, opts, flags);
-    context->decoder->hw_device_ctx = context->hw_context;
-    context->decoder->get_format = get_format_callback;
+    if (!retval)
+    {
+
+        context->decoder->hw_device_ctx = av_buffer_ref(context->hw_context);
+        context->decoder->get_format = get_format_callback;
+    }
     return retval;
 }
 
