@@ -31,15 +31,16 @@ int main()
 
     // In media streaming, cpu means software device:).
     //
-    //
     // If the hardware opening is successful, then data comes from the gpu.
     // Otherwise it comes from cpu.
-    // This function is assigned by us after hardware context is created or not.
+    // FFmpegpp library wrapped this function. You dont have to care, where the data comes from. :)
+
     // That's all.
 
     hardware::DecoderContextObject decoder_ctx;
     {
 
+        // If You select the DeviceType as None, the context will be opened on the cpu.
         std::cout << decoder_ctx(create, hardware::DeviceType::VAAPI) << std::endl;
 
         decoder_ctx(open, input->streams[video_index]->codecpar);
