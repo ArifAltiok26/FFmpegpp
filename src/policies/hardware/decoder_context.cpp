@@ -42,7 +42,9 @@ int DecoderContext_w::execute(DecoderContext *context, const Read &read, AVFrame
     if (context->decoder->hw_device_ctx)
     {
         AVFrameObject src;
-        context->decoder(read, src);
+        int retval = context->decoder(read, src);
+        if (retval < 0)
+            return retval;
         return av_hwframe_transfer_data(dest, src, 0);
     }
     return context->decoder(read, dest);
@@ -97,7 +99,7 @@ int DecoderContext_w::execute(DecoderContext *context, const Create, DeviceType 
         return 0;
     }
 
-    if (!get_format_callback)
+    if (ffmpeg_hw_type == AV_HWDEVICE_TYPE_NONE)
         return AVERROR(EINVAL);
 
     if (context->hw_context)
