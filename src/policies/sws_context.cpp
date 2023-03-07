@@ -27,7 +27,14 @@ int SwsContext_w::execute(SwsContext *&context, const Open &tag, const AVCodecPa
 int SwsContext_w::execute(SwsContext *context, const Rescale &, const AVFrame *src, AVFrame *dest)
 {
     // return sws_scale(context, src->data, src->linesize, 0, src->height, dest->data, dest->linesize);
-    return sws_scale_frame(context, dest, src);
+    int retval = sws_scale_frame(context, dest, src);
+    if (retval >= 0)
+    {
+        dest->pts = src->pts;
+        dest->pkt_dts = src->pkt_dts;
+        dest->pkt_duration = src->pkt_duration;
+    }
+    return retval;
 }
 
 } // namespace ygv::policies
